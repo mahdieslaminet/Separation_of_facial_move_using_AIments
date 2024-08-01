@@ -1,0 +1,33 @@
+%clc %clear %close all
+
+fs=977; p=3*fs; [b,a]=butter(10,[20,450]/(fs/2),'bandpass');
+
+for i=1:16 eval(['load a' ,num2str(i) '.mat']); eval(['a' ,num2str(i) '=filter(b,a,a' ,num2str(i) ');']); eval(['load r' ,num2str(i) '.mat']); eval(['r' ,num2str(i) '=filter(b,a,r' ,num2str(i) ');']); eval(['load t' ,num2str(i) '.mat']); eval(['t' ,num2str(i) '=filter(b,a,t' ,num2str(i) ');']); end
+
+a6=a6(2900:21485); akh=[a1;a2;a3;a4;a5;a9;a10;a14;a16]; res=[r1;r2;r3;r4;r5;r9;r10;r11;r14;r15;r16]; tajo=[t1;t2;t3;t4;t5;t9;t10;t11;t15;t16]; taxakh=[a6]; normakh=[a1]; taxres=[r6]; normres=[r1]; taxtajo=[t6]; normtajo=[t1];
+
+for i=1:floor(size(akh,1)/p) akhm(i,:)=akh(1+(i-1)p:ip,1); end for i=1:floor(size(res,1)/p) rest(i,:)=res(1+(i-1)p:ip,1); end for i=1:floor(size(tajo,1)/p) tajob(i,:)=tajo(1+(i-1)p:ip,1); end
+
+for i=1:floor(size(taxakh,1)/p) taxakhm(i,:)=taxakh(1+(i-1)p:ip,1); end
+
+for i=1:floor(size(normakh,1)/p) normakhm(i,:)=normakh(1+(i-1)p:ip,1); end
+
+for i=1:floor(size(taxtajo,1)/p) taxtajob(i,:)=taxtajo(1+(i-1)p:ip,1); end
+
+for i=1:floor(size(normtajo,1)/p) normtajob(i,:)=normtajo(1+(i-1)p:ip,1); end
+
+data=[akhm;rest;tajob]; data2=[taxakhm;taxtajob;normakhm;normtajob];
+
+for i=1:size(data,1) fi(i,1)=mean(data(i,:)); fi(i,2)=kurtosis(data(i,:)); fi(i,3)=skewness(data(i,:)); fi(i,4)=rms(data(i,:)); fi(i,5)=std(data(i,:)); tt(:,i)=2abs(fft(data(i,:),3600))/3600; f=fs/2linspace(0,1,3600/2+1); ss(:,i)=tt(1:3600/2+1); fi(i,6)=mean(ss(:,i)); fi(i,7)=median(ss(:,i)); fi(i,8)=wentropy(data(i,:),'shannon'); end
+
+for i=1:size(data2,1) fi2(i,1)=mean(data2(i,:)); fi2(i,2)=kurtosis(data2(i,:)); fi2(i,3)=skewness(data2(i,:)); fi2(i,4)=rms(data2(i,:)); fi2(i,5)=std(data2(i,:)); tt2(:,i)=2abs(fft(data2(i,:),3600))/3600; f2=fs/2linspace(0,1,3600/2+1); ss2(:,i)=tt2(1:3600/2+1); fi2(i,6)=mean(ss(:,i)); fi2(i,7)=median(ss(:,i)); fi2(i,8)=wentropy(data2(i,:),'shannon'); end
+
+tag=[zeros(size(akhm,1),1) zeros(size(akhm,1),1) ones(size(akhm,1),1); zeros(size(rest,1),1) ones(size(rest,1),1) zeros(size(rest,1),1); ones(size(tajob,1),1) zeros(size(tajob,1),1) zeros(size(tajob,1),1)];
+
+tag2=[zeros(size(taxakhm,1),1) zeros(size(taxakhm,1),1) zeros(size(taxakhm,1),1) ones(size(taxakhm,1),1); zeros(size(taxtajob,1),1) zeros(size(taxtajob,1),1) ones(size(taxtajob,1),1) zeros(size(taxtajob,1),1); zeros(size(normakhm,1),1) ones(size(normakhm,1),1) zeros(size(normakhm,1),1) zeros(size(normakhm,1),1); ones(size(normtajob,1),1) zeros(size(normtajob,1),1) zeros(size(normtajob,1),1) zeros(size(normtajob,1),1)];
+
+% fii=[min(fi(:,1)) min(fi(:,2)) min(fi(:,3)) min(fi(:,4)) min(fi(:,5)) min(fi(:,6)) min(fi(:,7)) min(fi(:,8))];
+
+subplot(3,1,1); plot(a1(1,300)) title("frown");
+
+subplot(3,1,3); plot(t1(1,300)) title("surprise");
